@@ -1,0 +1,47 @@
+name: Update Helm Chart Values
+
+on:
+  workflow_run:
+    workflows: ["Docker Build ECR"]
+    types:
+      - completed
+
+jobs:
+  update-helm-values:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        repository: dhenob/nucleus-repo
+        ref: main # Use the correct branch
+
+    - name: Download Docker Image Tag Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: Docker Build ECR
+        path: tag-artifact
+
+    - name: Read Docker Image Tag
+      id: read-tag
+      run: |
+        IMAGE_TAG=$(cat tag-artifact/.docker_image_tag.txt)
+        echo "The Docker image tag is: $IMAGE_TAG"
+        echo "::set-output name=tag::$IMAGE_TAG"
+      shell: bash
+
+    - name: Update Helm Chart Values
+      run: |
+        # Replace the value of 'imageTag' in your values.yaml file with the image tag
+        sed -i "s/{{ .Values.image.tag }}/$IMAGE_TAG/g" values-dev.yaml
+      working-directory: ${{ github.workspace }}
+
+    - name: Commit and Push Updated Values File
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git commit -am "Update image tag in values.yaml"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.P_GITHUB_TOKEN }}
