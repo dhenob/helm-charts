@@ -24,22 +24,17 @@ jobs:
       with:
         repository: dhenob/nucleus
         ref: main # Use the correct branch
-
-    - name: List Files in Artifact
-      run: |
-        ls -la
-      working-directory: ${{ github.workspace }}
-
+        
     - name: Download Docker Image Tag Artifact
       uses: actions/download-artifact@v2
       with:
         name: Docker Build ECR
-        path: .nucleus_image_tag.txt
+        path: nucleus_image_tag.txt
 
     - name: Read Docker Image Tag
       id: read-tag
       run: |
-        IMAGE_TAG=$(cat .nucleus_image_tag.txt)
+        IMAGE_TAG=$(cat nucleus_image_tag.txt)
         echo "The Docker image tag is: $IMAGE_TAG"
         echo "::set-output name=tag::$IMAGE_TAG"
       shell: bash
