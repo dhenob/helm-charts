@@ -22,7 +22,7 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
       with:
-        repository: dhenob/helm-charts
+        repository: dhenob/nucleus
         ref: main # Use the correct branch
 
     - name: Download Docker Image Tag Artifact
