@@ -29,16 +29,20 @@ jobs:
       id: get-assets
       run: |
         curl -s -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
-          -H "Accept: application/octet-stream" 
-          -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
+        -H "Accept: application/octet-stream" \
+        -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
       continue-on-error: true
 
     - name: Read Docker Image Tag
       id: read-tag
       run: |
-        IMAGE_TAG=$(cat nucleus_image_tag.txt)
-        echo "The Docker image tag is: $IMAGE_TAG"
-        echo "::set-output name=tag::$IMAGE_TAG"
+        if [ -f nucleus_image_tag.txt ]; then
+          IMAGE_TAG=$(cat nucleus_image_tag.txt)
+          echo "The Docker image tag is: $IMAGE_TAG"
+          echo "::set-output name=tag::$IMAGE_TAG"
+        else
+          echo "nucleus_image_tag.txt not found."
+        fi
       shell: bash
 
         
