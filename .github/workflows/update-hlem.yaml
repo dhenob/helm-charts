@@ -29,7 +29,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: Docker Build ECR
-        path: tag-artifact
+        path: .nucleus_image_tag.txt
 
     - name: Read Docker Image Tag
       id: read-tag
