@@ -45,6 +45,13 @@ jobs:
         fi
       shell: bash
 
+    - name: Debug Output
+      run: |
+        echo "GitHub Token: ${{ secrets.API_GITHUB_TOKEN }}"
+        echo "Release URL: https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt"
+      shell: bash
+
+
     - name: List Files in Working Directory
       run: ls
 
