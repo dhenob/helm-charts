@@ -27,7 +27,7 @@ jobs:
 
     - name: List Files in Artifact
       run: |
-        find nucleus_image_tag.txt -type f
+        ls -la
       working-directory: ${{ github.workspace }}
 
     - name: Download Docker Image Tag Artifact
