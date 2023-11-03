@@ -31,7 +31,7 @@ jobs:
         curl -s -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
         -H "Accept: application/octet-stream" \
         -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
-      continue-on-error: true
+      # continue-on-error: true
 
     - name: Read Docker Image Tag
       id: read-tag
