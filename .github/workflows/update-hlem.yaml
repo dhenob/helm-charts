@@ -22,7 +22,7 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
       with:
-        repository: dhenob/nucleus-repo
+        repository: dhenob/helm-charts
         ref: main # Use the correct branch
 
     - name: Download Docker Image Tag Artifact
@@ -34,7 +34,7 @@ jobs:
     - name: Read Docker Image Tag
       id: read-tag
       run: |
-        IMAGE_TAG=$(cat tag-artifact/.docker_image_tag.txt)
+        IMAGE_TAG=$(cat tag-artifact/.nucleus_image_tag.txt)
         echo "The Docker image tag is: $IMAGE_TAG"
         echo "::set-output name=tag::$IMAGE_TAG"
       shell: bash
@@ -52,4 +52,4 @@ jobs:
         git commit -am "Update image tag in values.yaml"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.P_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
