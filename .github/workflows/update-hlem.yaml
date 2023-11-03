@@ -34,7 +34,7 @@ jobs:
     - name: Read Docker Image Tag
       id: read-tag
       run: |
-        IMAGE_TAG=$(cat tag-artifact/.nucleus_image_tag.txt)
+        IMAGE_TAG=$(cat .nucleus_image_tag.txt)
         echo "The Docker image tag is: $IMAGE_TAG"
         echo "::set-output name=tag::$IMAGE_TAG"
       shell: bash
