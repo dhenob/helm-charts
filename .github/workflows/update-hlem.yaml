@@ -1,3 +1,5 @@
+name: Update Helm Chart Values
+
 on:
   workflow_dispatch:
     inputs:
@@ -43,7 +45,6 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-
 
 
 # name: Update Helm Chart Values
