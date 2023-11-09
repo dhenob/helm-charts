@@ -9,6 +9,9 @@ on:
       environment:
         description: 'Environment'
         required: true
+      release_id:
+        description: 'Release ID'
+        required: true
   # workflow_run:
   #   workflows: ["Docker Build ECR"]
   #   types:
@@ -30,8 +33,16 @@ jobs:
       run: |
         curl -s -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
         -H "Accept: application/octet-stream" \
-        -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
-      # continue-on-error: true
+        -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ inputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
+
+
+    # - name: Get Release Assets
+    #   id: get-assets
+    #   run: |
+    #     curl -s -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
+    #     -H "Accept: application/octet-stream" \
+    #     -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
+    #   # continue-on-error: true
 
     - name: Read Docker Image Tag
       id: read-tag
