@@ -1,5 +1,3 @@
-name: Update Helm Chart Values
-
 on:
   workflow_dispatch:
     inputs:
@@ -12,10 +10,6 @@ on:
       release_id:
         description: 'Release ID'
         required: true
-  # workflow_run:
-  #   workflows: ["Docker Build ECR"]
-  #   types:
-  #     - completed
 
 jobs:
   update-helm-values:
@@ -28,48 +22,16 @@ jobs:
         repository: dhenob/helm-charts
         ref: main # Use the correct branch
 
-    - name: Get Release Assets
-      id: get-assets
-      run: |
-        curl -s -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
-        -H "Accept: application/octet-stream" \
-        -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ inputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
-
-
-    # - name: Get Release Assets
-    #   id: get-assets
-    #   run: |
-    #     curl -s -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
-    #     -H "Accept: application/octet-stream" \
-    #     -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
-    #   # continue-on-error: true
-
-    - name: Read Docker Image Tag
-      id: read-tag
-      run: |
-        if [ -f nucleus_image_tag.txt ]; then
-          IMAGE_TAG=$(cat nucleus_image_tag.txt)
-          echo "The Docker image tag is: $IMAGE_TAG"
-          echo "::set-output name=tag::$IMAGE_TAG"
-        else
-          echo "nucleus_image_tag.txt not found."
-        fi
-      shell: bash
-
     - name: Debug Output
       run: |
         echo "GitHub Token: ${{ secrets.API_GITHUB_TOKEN }}"
-        echo "Release URL: https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt"
-      shell: bash
-
-
-    - name: List Files in Working Directory
-      run: ls
+        echo "Image Tag: ${{ github.event.inputs.tag }}"
+        echo "Release ID: ${{ github.event.inputs.release_id }}"
 
     - name: Update Helm Chart Values
       run: |
         # Replace the value of 'imageTag' in your values.yaml file with the image tag
-        sed -i "s/{{ .Values.image.tag }}/$IMAGE_TAG/g" values-dev.yaml
+        sed -i "s/{{ .Values.image.tag }}/${{ github.event.inputs.tag }}/g" values-dev.yaml
       working-directory: ${{ github.workspace }}
 
     - name: Commit and Push Updated Values File
@@ -81,3 +43,89 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+
+
+
+# name: Update Helm Chart Values
+
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       tag:
+#         description: 'Image Tag'
+#         required: true
+#       environment:
+#         description: 'Environment'
+#         required: true
+#       release_id:
+#         description: 'Release ID'
+#         required: true
+#   # workflow_run:
+#   #   workflows: ["Docker Build ECR"]
+#   #   types:
+#   #     - completed
+
+# jobs:
+#   update-helm-values:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout Repository
+#       uses: actions/checkout@v2
+#       with:
+#         repository: dhenob/helm-charts
+#         ref: main # Use the correct branch
+
+#     - name: Get Release Assets
+#       id: get-assets
+#       run: |
+#         curl -s -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
+#         -H "Accept: application/octet-stream" \
+#         -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ inputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
+
+
+#     # - name: Get Release Assets
+#     #   id: get-assets
+#     #   run: |
+#     #     curl -s -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
+#     #     -H "Accept: application/octet-stream" \
+#     #     -L https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt -o nucleus_image_tag.txt
+#     #   # continue-on-error: true
+
+#     - name: Read Docker Image Tag
+#       id: read-tag
+#       run: |
+#         if [ -f nucleus_image_tag.txt ]; then
+#           IMAGE_TAG=$(cat nucleus_image_tag.txt)
+#           echo "The Docker image tag is: $IMAGE_TAG"
+#           echo "::set-output name=tag::$IMAGE_TAG"
+#         else
+#           echo "nucleus_image_tag.txt not found."
+#         fi
+#       shell: bash
+
+#     - name: Debug Output
+#       run: |
+#         echo "GitHub Token: ${{ secrets.API_GITHUB_TOKEN }}"
+#         echo "Release URL: https://api.github.com/repos/dhenob/nucleus/releases/assets/${{ steps.release-id.outputs.release_id }}/nucleus_image_tag.txt"
+#       shell: bash
+
+
+#     - name: List Files in Working Directory
+#       run: ls
+
+#     - name: Update Helm Chart Values
+#       run: |
+#         # Replace the value of 'imageTag' in your values.yaml file with the image tag
+#         sed -i "s/{{ .Values.image.tag }}/$IMAGE_TAG/g" values-dev.yaml
+#       working-directory: ${{ github.workspace }}
+
+#     - name: Commit and Push Updated Values File
+#       run: |
+#         git config --global user.email "actions@github.com"
+#         git config --global user.name "GitHub Actions"
+#         git add .
+#         git commit -am "Update image tag in values.yaml"
+#         git push
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
