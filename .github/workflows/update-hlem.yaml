@@ -31,10 +31,12 @@ jobs:
         echo "Project Name: ${{ github.event.inputs.project_name }}"
 
     - name: Navigate to Project Directory
-      run: cd ${{ github.event.inputs.project_name }}-helm
+      run: |
+        cd ${{ github.event.inputs.project_name }}-helm 
+        ls -la  # list files to debug
 
     - name: Update Helm Chart Values
-      run: |
+      run: | 
         # Replace the value of 'tag' in your values.yaml file with the image tag
         if [ "${{ github.event.inputs.environment }}" == "dev" ]; then
           sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" values-dev.yaml
