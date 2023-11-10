@@ -33,7 +33,7 @@ jobs:
     - name: Update Helm Chart Values
       run: |
         # Replace the value of 'tag' in your values.yaml file with the image tag
-        sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" values.yaml
+        sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" values-dev.yaml
       working-directory: ${{ github.workspace }}
 
     - name: Commit and Push Updated Values File
