@@ -9,9 +9,6 @@ on:
       environment:
         description: 'Environment'
         required: true
-      release_id:
-        description: 'Release ID'
-        required: true
 
 jobs:
   update-helm-values:
@@ -28,12 +25,14 @@ jobs:
       run: |
         echo "GitHub Token: ${{ secrets.API_GITHUB_TOKEN }}"
         echo "Image Tag: ${{ github.event.inputs.tag }}"
-        echo "Release ID: ${{ github.event.inputs.release_id }}"
+        # Note: You don't need 'release_id' in this workflow, so it's not printed.
 
     - name: Update Helm Chart Values
       run: |
         # Replace the value of 'imageTag' in your values.yaml file with the image tag
         sed -i "s/{{ .Values.image.tag }}/${{ github.event.inputs.tag }}/g" values-dev.yaml
+        # Print the contents of the updated values file
+        cat values-dev.yaml
       working-directory: ${{ github.workspace }}
 
     - name: Commit and Push Updated Values File
