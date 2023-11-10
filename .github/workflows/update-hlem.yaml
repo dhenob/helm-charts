@@ -9,6 +9,9 @@ on:
       environment:
         description: 'Environment'
         required: true
+      release_id:
+        description: 'Release ID'
+        required: true
 
 jobs:
   update-helm-values:
@@ -19,31 +22,30 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: dhenob/helm-charts
-        ref: main # Use the correct branch
+        ref: main
 
     - name: Debug Output
       run: |
         echo "GitHub Token: ${{ secrets.API_GITHUB_TOKEN }}"
         echo "Image Tag: ${{ github.event.inputs.tag }}"
-        # Note: You don't need 'release_id' in this workflow, so it's not printed.
+        echo "Release ID: ${{ github.event.inputs.release_id }}"
 
     - name: Update Helm Chart Values
       run: |
-        # Replace the value of 'imageTag' in your values.yaml file with the image tag
-        sed -i "s/{{ .Values.image.tag }}/${{ github.event.inputs.tag }}/g" values-dev.yaml
-        # Print the contents of the updated values file
-        cat values-dev.yaml
+        # Replace the value of 'tag' in your values.yaml file with the image tag
+        sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" values.yaml
       working-directory: ${{ github.workspace }}
 
     - name: Commit and Push Updated Values File
       run: |
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
-        git add .
-        git commit -am "Update image tag in values.yaml"
+        git add values.yaml
+        git commit -m "Update image tag to ${{ github.event.inputs.tag }}"
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+
 
 
 # name: Update Helm Chart Values
