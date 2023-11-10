@@ -9,9 +9,9 @@ on:
       environment:
         description: 'Environment'
         required: true
-      release_id:
-        description: 'Release ID'
-        required: true
+      # release_id:
+      #   description: 'Release ID'
+      #   required: true
 
 jobs:
   update-helm-values:
