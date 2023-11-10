@@ -32,7 +32,7 @@ jobs:
 
     - name: Navigate to Project Directory
       run: |
-        cd ${{ github.event.inputs.project_name }}-helm 
+        cd ${{ github.workspace }}/${{ github.event.inputs.project_name }}-helm
         ls -la  # list files to debug
 
     - name: Update Helm Chart Values
@@ -42,8 +42,11 @@ jobs:
           sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" values-dev.yaml
         elif [ "${{ github.event.inputs.environment }}" == "prod" ]; then
           sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" values-prod.yaml
+        else
+          echo "Invalid environment specified"
+          exit 1
         fi
-      working-directory: ${{ github.workspace }}
+      working-directory: ${{ github.workspace }}/${{ github.event.inputs.project_name }}-helm
 
     - name: Commit and Push Updated Values File
       run: |
@@ -54,6 +57,7 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+
 
 
 
