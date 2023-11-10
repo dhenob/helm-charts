@@ -57,7 +57,7 @@ jobs:
         git diff --cached --exit-code || git commit -m "Update image tag to ${{ github.event.inputs.tag }} for ${{ github.event.inputs.project_name }} [skip ci]"
         git push
       env:
-      GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
 
     # - name: Commit and Push Updated Values File
     #   run: |
