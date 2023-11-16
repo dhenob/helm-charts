@@ -38,13 +38,13 @@ jobs:
     - name: Update Helm Chart Values
       run: |
         if [ "${{ github.event.inputs.environment }}" == "dev" ]; then
-          sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}-helm/values-dev.yaml
+          sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}/values-dev.yaml
           export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-dev.yaml"
         elif [ "${{ github.event.inputs.environment }}" == "stag" ]; then
-          sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}-helm/values-stag.yaml
+          sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}/values-stag.yaml
           export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-stag.yaml"
         elif [ "${{ github.event.inputs.environment }}" == "prod" ]; then
-          sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}-helm/values-prod.yaml
+          sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}/values-prod.yaml
           export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-prod.yaml"
         fi
       working-directory: ${{ github.workspace }}
