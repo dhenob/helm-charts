@@ -51,20 +51,6 @@ jobs:
       env:
         UPDATED_VALUES_FILE: ${{ env.UPDATED_VALUES_FILE }}
 
-    # - name: Update Helm Chart Values
-    #   run: |
-    #     # Replace the value of 'tag' in your values.yaml file with the image tag
-    #     if [ "${{ github.event.inputs.environment }}" == "dev" ]; then
-    #       sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}-helm/values-dev.yaml
-    #       export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-dev.yaml"
-    #     elif [ "${{ github.event.inputs.environment }}" == "prod" ]; then
-    #       sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}-helm/values-prod.yaml
-    #       export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-prod.yaml"
-    #     fi
-    #   working-directory: ${{ github.workspace }}
-    #   env:
-    #     UPDATED_VALUES_FILE: ${{ env.UPDATED_VALUES_FILE }}
-
     - name: Commit and Push Updated Values File
       run: |
         git config --global user.email "actions@github.com"
@@ -108,6 +94,20 @@ jobs:
     #   env:
     #     GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
 
+
+    # - name: Update Helm Chart Values
+    #   run: |
+    #     # Replace the value of 'tag' in your values.yaml file with the image tag
+    #     if [ "${{ github.event.inputs.environment }}" == "dev" ]; then
+    #       sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}-helm/values-dev.yaml
+    #       export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-dev.yaml"
+    #     elif [ "${{ github.event.inputs.environment }}" == "prod" ]; then
+    #       sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}-helm/values-prod.yaml
+    #       export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-prod.yaml"
+    #     fi
+    #   working-directory: ${{ github.workspace }}
+    #   env:
+    #     UPDATED_VALUES_FILE: ${{ env.UPDATED_VALUES_FILE }}
 
 
 
