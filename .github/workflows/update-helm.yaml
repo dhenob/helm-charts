@@ -32,7 +32,7 @@ jobs:
 
     - name: Navigate to Project Directory
       run: |
-        cd ${{ github.workspace }}/${{ github.event.inputs.project_name }}-helm
+        cd ${{ github.workspace }}/${{ github.event.inputs.project_name }}
         ls -la  # list files to debug
 
     - name: Update Helm Chart Values
