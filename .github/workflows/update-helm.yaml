@@ -119,14 +119,21 @@ jobs:
 
     - name: Commit and Push Updated Values File
       run: |
-        UPDATED_VALUES_FILE=${{ env.UPDATED_VALUES_FILE }}
+        echo "Current directory:"
+        pwd
+        echo "Directory contents:"
+        ls -la
+
+        UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}/$UPDATED_VALUES_FILE"
         echo "Updated values file to commit: $UPDATED_VALUES_FILE"
+
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         git add $UPDATED_VALUES_FILE
         git status
-        git diff --cached --exit-code || git commit -m "Update image tag to ${{ github.event.inputs.tag }} for ${{ github.event.inputs.project_name }} [skip ci]"
+        git diff --cached --exit-code || git commit -m "Update image tag to 0.0.1 for ir-nucleus-helm [skip ci]"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
