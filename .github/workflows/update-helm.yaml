@@ -1,71 +1,3 @@
-# name: Update Helm Chart Values
-
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       tag:
-#         description: 'Image Tag'
-#         required: true
-#       environment:
-#         description: 'Environment'
-#         required: true
-#       project_name:
-#         description: 'Name of the project'
-#         required: true
-
-# jobs:
-#   update-helm-values:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - name: Checkout Repository
-#       uses: actions/checkout@v2
-#       with:
-#         repository: dhenob/helm-charts
-#         ref: main
-
-#     - name: Debug Output
-#       run: |
-#         echo "GitHub Token: ${{ secrets.API_GITHUB_TOKEN }}"
-#         echo "Image Tag: ${{ github.event.inputs.tag }}"
-#         echo "Project Name: ${{ github.event.inputs.project_name }}"
-
-#     - name: Navigate to Project Directory
-#       run: |
-#         cd ${{ github.workspace }}/${{ github.event.inputs.project_name }}
-#         ls -la  # list files to debug
-
-#     - name: Update Helm Chart Values
-#       run: |
-#         if [ "${{ github.event.inputs.environment }}" == "dev" ]; then
-#           sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}/values-dev.yaml
-#           export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-dev.yaml"
-#         elif [ "${{ github.event.inputs.environment }}" == "stag" ]; then
-#           sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}/values-stag.yaml
-#           export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-stag.yaml"
-#         elif [ "${{ github.event.inputs.environment }}" == "prod" ]; then
-#           sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" ${{ github.event.inputs.project_name }}/values-prod.yaml
-#           export UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}-helm/values-prod.yaml"
-#         fi
-#       working-directory: ${{ github.workspace }}
-#       env:
-#         UPDATED_VALUES_FILE: ${{ env.UPDATED_VALUES_FILE }}
-
-#     - name: Commit and Push Updated Values File
-#       run: |
-#         git config --global user.email "actions@github.com"
-#         git config --global user.name "GitHub Actions"
-#         git add .
-#         git diff --cached --exit-code || git commit -m "Update image tag to ${{ github.event.inputs.tag }} for ${{ github.event.inputs.project_name }} [skip ci]"
-#         git push
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-
-#         git push
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-
-
 name: Update Helm Chart Values
 
 on:
@@ -75,7 +7,7 @@ on:
         description: 'Image Tag'
         required: true
       environment:
-        description: 'Environment'
+        description: 'Environment (e.g., dev, stag, prod)'
         required: true
       project_name:
         description: 'Name of the project'
@@ -84,6 +16,7 @@ on:
 jobs:
   update-helm-values:
     runs-on: ubuntu-latest
+    name: Update Values in Helm Chart
 
     steps:
     - name: Checkout Repository
@@ -92,48 +25,33 @@ jobs:
         repository: dhenob/helm-charts
         ref: main
 
+    - name: Set up Environment
+      run: |
+        echo "PROJECT_NAME=${{ github.event.inputs.project_name }}" >> $GITHUB_ENV
+        echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+        echo "IMAGE_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+
     - name: Debug Output
       run: |
-        echo "GitHub Token: ${{ secrets.API_GITHUB_TOKEN }}"
-        echo "Image Tag: ${{ github.event.inputs.tag }}"
-        echo "Project Name: ${{ github.event.inputs.project_name }}"
-
-    - name: Navigate to Project Directory
-      run: |
-        cd ${{ github.workspace }}/${{ github.event.inputs.project_name }}
-        ls -la  # list files to debug
+        echo "Image Tag: $IMAGE_TAG"
+        echo "Project Name: $PROJECT_NAME"
+        echo "Environment: $ENVIRONMENT"
 
     - name: Update Helm Chart Values
       run: |
-        FILE_TO_UPDATE=""
-        if [ "${{ github.event.inputs.environment }}" == "dev" ]; then
-          FILE_TO_UPDATE="values-dev.yaml"
-        elif [ "${{ github.event.inputs.environment }}" == "stag" ]; then
-          FILE_TO_UPDATE="values-stag.yaml"
-        elif [ "${{ github.event.inputs.environment }}" == "prod" ]; then
-          FILE_TO_UPDATE="values-prod.yaml"
-        fi
-        sed -i "s/tag: .*/tag: ${{ github.event.inputs.tag }}/g" $FILE_TO_UPDATE
+        FILE_TO_UPDATE="values-${ENVIRONMENT}.yaml"
+        sed -i "s/tag: .*/tag: $IMAGE_TAG/g" $FILE_TO_UPDATE
         echo "UPDATED_VALUES_FILE=$FILE_TO_UPDATE" >> $GITHUB_ENV
       working-directory: ${{ github.workspace }}/${{ github.event.inputs.project_name }}
 
     - name: Commit and Push Updated Values File
       run: |
-        echo "Current directory:"
-        pwd
-        echo "Directory contents:"
-        ls -la
-
-        UPDATED_VALUES_FILE="${{ github.event.inputs.project_name }}/$UPDATED_VALUES_FILE"
-        echo "Updated values file to commit: $UPDATED_VALUES_FILE"
-
+        UPDATED_VALUES_FILE="$PROJECT_NAME/$UPDATED_VALUES_FILE"
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         git add $UPDATED_VALUES_FILE
         git status
-        git diff --cached --exit-code || git commit -m "Update image tag to ${{ github.event.inputs.tag }} for ir-nucleus-helm [skip ci]"
+        git diff --cached --exit-code || git commit -m "Update image tag to $IMAGE_TAG for $PROJECT_NAME [skip ci]"
         git push
       env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
