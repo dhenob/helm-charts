@@ -60,7 +60,7 @@ image:
   repository: dhenob/ir-nucleus
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 039e5388838c3d3b1f34a1e7cea814797f733df0
+  tag: fc0b7fecc41dcffaf4899b3b956d87417cf7e34d
 
 imagePullSecrets: []
 nameOverride: ''
