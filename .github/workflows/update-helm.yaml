@@ -131,7 +131,7 @@ jobs:
         git config --global user.name "GitHub Actions"
         git add $UPDATED_VALUES_FILE
         git status
-        git diff --cached --exit-code || git commit -m "Update image tag to 0.0.1 for ir-nucleus-helm [skip ci]"
+        git diff --cached --exit-code || git commit -m "Update image tag to ${{ github.event.inputs.tag }} for ir-nucleus-helm [skip ci]"
         git push
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
